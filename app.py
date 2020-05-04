@@ -11,7 +11,7 @@ import plotly.express as px
 from dash.dependencies import Output, Input
 
 #from plotly.subplots import make_subplots
-
+import datetime
 import math
 
 
@@ -178,6 +178,21 @@ lockdown_date = list(df_lockdown.date.unique())
 
 color1 = [ "#ead6ee", "#aebaf8"]
 color2 = ["#e8f5c8","#aebaf8"]
+
+#######world
+df_world = pd.read_csv('countryLockdown_date.csv')
+
+df_world['area'] = df_world['type'].map({0: 'Not lockdown', 0.5: 'Partial lockdown', 1: 'Full lockdown'})
+
+for col in df_world.columns: 
+    df_world[col] = df_world[col].astype(str)
+
+df_world['text'] = df_world['date'] + df_world['region'] + ': ' + df_world['area'] 
+
+world_date = list(df_world.date.unique())
+world_date = sorted(world_date, key=lambda date: datetime.datetime.strptime(date, "%m/%d/%y"))
+
+color_lock = [ 'rgb(204,230,255)', 'rgb(133,122,173)', 'rgb(105,10,61)']
 
 
 ####################################################################################
@@ -375,7 +390,7 @@ FLATTEN_THE_CURVE = [
                 dcc.Slider(id = 'lockdown_slider',
                                     marks = {0:{'label':'3/19/20'}, 6:{'label':'3/25/20'},
                                     12:{'label':'3/31/20'}, 19:{'label':'4/7','style': {'color': '#f50'}},
-                                    20:{'label':'4/21','style': {'color': '#f50'}},
+                                    20:{'label':'','style': {'color': '#f50'}},
                                     27:{'label':'4/30/20'}, 31:{'label':'5/4/20'} 
                                     },
                                     min = 0,
@@ -388,13 +403,14 @@ FLATTEN_THE_CURVE = [
             dbc.Col([
                 html.Div([
                     html.Img(src = "assets/legend2.jpeg",
-                            style = {'height': '15px', 'marginTop': '60px', 'float': 'left'})
+                            style = {'height': '100px', 'marginTop': '60px', 'float': 'left'})
                     
                 ], style={'vertical-align': 'middle'})
                 
 
                 ],width = 1),
             dbc.Col([
+                html.Div([], style={'height': '20px'}),
                 html.Label('Select Metrics'),
                 dcc.Dropdown(
                         id = "selected_measure",
@@ -408,37 +424,54 @@ FLATTEN_THE_CURVE = [
             
 
         ]),
-
         dbc.Row([
             dbc.Col([
                 html.Label('Select states to include in the line plot: '),
                 dcc.Dropdown(
                             id = "selected_states",
                             options=[{'label': x, 'value': x} for x in list(us_confirmedR.columns[1:])],
-                            value= ['New York', 'California', 'Georgia', 'Florida','Delaware', 'Colorado'],
+                            value= ['New York', 'California'],
                             multi=True
                             )
                 ], width = 12)
 
             ]),
-
         
-
         dbc.Row([
-            html.Label('Multi-Select Dropdown'),
-            dcc.Dropdown(
-                        id = "selected_states",
-                        options=[{'label': x, 'value': x} for x in list(us_confirmedR.columns[1:])],
-                        value= ['New York', 'California'],
-                        multi=True
-                        ),
-            dcc.Dropdown(
+            dbc.Col([
+                dcc.Graph(id='world_lockdown_map'),
+                dcc.Slider(id = 'world_lockdown_slider',
+                                    marks = {0:{'label':'Jan 23'}, 1:{'label':''}, 2:{'label':''}, 3:{'label':'Feb 25'}, 
+                                    4:{'label':''}, 5:{'label':''}, 6:{'label':'Mar 5'}, 7:{'label':''}, 
+                                    8:{'label':''}, 9:{'label':''}, 10:{'label':'Mar 10'}, 11:{'label':''}, 
+                                    12:{'label':''}, 13:{'label':''}, 14:{'label':''}, 15:{'label':'Mar 15'}, 
+                                    16:{'label':''}, 17:{'label':''}, 18:{'label':''}, 19:{'label':''}, 
+                                    20:{'label':'Mar 20'}, 21:{'label':''}, 22:{'label':''}, 23:{'label':''}, 
+                                    24:{'label':''}, 25:{'label':'Mar 25'}, 26:{'label':''}, 27:{'label':''}, 
+                                    28:{'label':'Mar 28'}, 29:{'label':''}, 30:{'label':'Mar 30'}, 31:{'label':''}
+                                    },
+                                    min = 0,
+                                    max = 31,
+                                    value = 16,
+                                    included = False,
+                                    updatemode='drag'                                    
+                                    )   
+
+                ], width = 6),
+
+            dbc.Col([
+                html.Div([], style={'height': '20px'}),
+                html.Label('Select Metrics'),
+                dcc.Dropdown(
                         id = "selected_measure2",
                         options = [{'label': 'Confirmed Growth Rate', 'value': 'confirmed'},
                                    {'label': 'Death Growth Rate', 'value': 'death'}],
                         value = 'confirmed'
                         ),
-            dcc.Graph(id = "lineplot2")
+                dcc.Graph(id = "lineplot2")
+
+                ], width = 6)
+            
 
 
         ])
@@ -594,23 +627,23 @@ MAP_LOCKDOWN = [
 SURVEY_MEDIA = [
     dbc.CardHeader(html.H5("Survey")),
     dbc.CardBody([
-        dbc.Row([
-            dbc.Col([
-                html.H5("Select Topics :")
-                ], width = 2),
-            dbc.Col([
-                dcc.Dropdown(
-                    id = 'selected_question',
-                    options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
-                               {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
-                               {'label': 'Approval of Trump’s response varies widely by party', 'value': 'Q_approval_1'},
-                               {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval_2'}]
+        # dbc.Row([
+        #     dbc.Col([
+        #         html.H5("Select Topics :")
+        #         ], width = 2),
+        #     dbc.Col([
+        #         dcc.Dropdown(
+        #             id = 'selected_question',
+        #             options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
+        #                        {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
+        #                        {'label': 'Approval of Trump’s response varies widely by party', 'value': 'Q_approval_1'},
+        #                        {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval_2'}]
 
-                    )
+        #             )
 
-                ], width = 10),
+        #         ], width = 10),
 
-            ]),
+        #     ]),
         dbc.Row([
             dbc.Col([
                 html.H5("Choose Filter :"),
@@ -681,17 +714,18 @@ TWEETER = [
                         value=38,
                         marks=markdict,
                         step=1)
+
                 ], width = 12)
 
 
             ]),
         dbc.Row([
             dbc.Col([
-                html.Div(id="image", style = {'width': '100%'})
-                ], width = 8),
+                html.Div(id="image")
+                ], width = 6),
             dbc.Col([
-                dcc.Graph(id ='hot-table', style={'display': 'inline-block','width':'100%'})
-                ], width = 4)
+                dcc.Graph(id ='hot-table', style={'display': 'inline-block'})
+                ], width = 6)
 
             ])
 
@@ -705,11 +739,15 @@ GOOGLE =[
     dbc.CardBody([
         dbc.Row([
             dbc.Col([
-                html.Iframe(src = "https://public.flourish.studio/visualisation/2211837/", width="100%", height = '600px'),
-                html.Iframe(src = "https://dash-gallery.plotly.host/dash-drug-discovery/", width="100%", height = '600px')
+                html.Iframe(src = "https://public.flourish.studio/visualisation/2211837/", width="100%", height = '600px')
                 ], width = 6),
 
             dbc.Col([
+                dbc.Jumbotron([
+                    html.Img(src = "assets/googleTrend5.png",
+                            style = {"width" : '400px'})
+                    ])
+                
                 
                 ], width = 6)
             ])
@@ -965,7 +1003,7 @@ def update_fig(selected_countries, selected_measure):
                              y = df['US'],
                              name = 'US',
                              mode = 'lines',
-                             line = dict(color = 'rgba(53,92,125, 0.8)', width = 2, shape = 'spline'),
+                             line = dict(color = 'rgba(53,92,125, 0.8)', width = 3, shape = 'spline'),
                              #text = ["United States" if i == 38 else "" for i in range(df.shape[0])],
                              #textposition = "top center",
                              #textfont = dict(color = "rgba(53,92,125, 1)")
@@ -985,12 +1023,11 @@ def update_fig(selected_countries, selected_measure):
                              y = df['Italy'],
                              name = 'Italy',
                              mode = 'lines',
-                             line = dict(color = 'rgba(153,184,152, 0.9)', width = 2, shape = 'spline'),
+                             line = dict(color = 'rgba(153,184,152, 0.9)', width = 3, shape = 'spline'),
                             ),
               go.Scatter(x = df.Date,
                           y = [df['Italy'][i] if pd.to_datetime(lockdown.Date[lockdown['Country/Region'] == 'Italy'].values[0]) == pd.Timestamp(df.Date[i]) else np.nan for i in range(df.shape[0])],
                           mode = 'markers',
-                          name = 'Italy (full lockdown)',
                           marker = dict(color = 'rgba(153,184,152, 0.9)', size = 10),
                             )]
 
@@ -999,12 +1036,11 @@ def update_fig(selected_countries, selected_measure):
                              y = df['Spain'],
                              name = 'Spain',
                              mode = 'lines',
-                             line = dict(color = 'rgba(237, 177, 131, 0.9)', width = 2, shape = 'spline'),
+                             line = dict(color = 'rgba(237, 177, 131, 0.9)', width = 3, shape = 'spline'),
                             ),
               go.Scatter(x = df.Date,
                           y = [df['Spain'][i] if pd.to_datetime(lockdown.Date[lockdown['Country/Region'] == 'Spain'].values[0]) == pd.Timestamp(df.Date[i]) else np.nan for i in range(df.shape[0])],
                           mode = 'markers',
-                          name = 'Spain (full lockdown)',
                           marker = dict(color = 'rgba(237, 177, 131, 0.9)', size = 10),
                           #text = ["Full" if lockdown.Date[lockdown['Country/Region'] == 'Spain'].values == df.Date[i] else "" for i in range(df.shape[0])],
                           #textposition="top right"
@@ -1014,12 +1050,11 @@ def update_fig(selected_countries, selected_measure):
                              y = df['South Korea'],
                              name = 'South Korea',
                              mode = 'lines',
-                             line = dict(color = 'rgba(246,114,128, 0.9)', width = 2, shape = 'spline'),
+                             line = dict(color = 'rgba(246,114,128, 0.9)', width = 3, shape = 'spline'),
                             ),
               go.Scatter(x = df.Date,
                           y = [df['South Korea'][i] if pd.to_datetime(lockdown.Date[lockdown['Country/Region'] == 'South Korea'].values[0]) == pd.Timestamp(df.Date[i]) else np.nan for i in range(df.shape[0])],
                           mode = 'markers',
-                          name = 'South Korea (full)',
                           marker = dict(color = 'rgba(246,114,128, 0.9)', size = 10),
                           #text = ["Full" if lockdown.Date[lockdown['Country/Region'] == 'South Korea'].values == df.Date[i] else "" for i in range(df.shape[0])],
                           #textposition="top right"
@@ -1035,7 +1070,7 @@ def update_fig(selected_countries, selected_measure):
                             width = 2, shape = 'spline')) for i in range(len(selected_countries))]
     others2 = [go.Scatter(x = df.Date,
                           y = [df[selected_countries[i]][j] if pd.to_datetime(lockdown.Date[lockdown['Country/Region'] == selected_countries[i]].values) == pd.Timestamp(df.Date.iloc[j]) else np.nan for j in range(df.shape[0])],
-                          name = selected_countries[i] + ' (' + str(lockdown.Type[lockdown['Country/Region'] == selected_countries[i]].values[0]) + ')',
+                          #name = selected_countries[i] + ' (' + str(lockdown.Type[lockdown['Country/Region'] == selected_countries[i]].values[0]) + ')',
                           mode = 'markers',
                           #marker = dict(color = colors_World[selected_countries[i]],  size = 5),
                           #text = [lockdown['Type'][lockdown['Country/Region'] == selected_countries[i]].values[0] if pd.to_datetime(lockdown.Date[lockdown['Country/Region'] == selected_countries[i]].values) == pd.Timestamp(df.Date.iloc[j]) else "unknown type" for j in range(df.shape[0])],
@@ -1047,10 +1082,10 @@ def update_fig(selected_countries, selected_measure):
     data = data + others1 + others2 + US + IT + SP + SK + ID + GM + UK
 
     if selected_measure == "confirmed":
-        layout = {"title": "Confirmed Case Growth Rate ", "width": 750, "plot_bgcolor": '#f5f7fa',
+        layout = {"title": "Confirmed Case Growth Rate ", "height": 450, "plot_bgcolor": '#f5f7fa',
                     "margin": "l=0, r=0, t=50, b=0, pad=0"}
     elif selected_measure == "death":
-        layout = {"title": "Death Case Growth Rate", "height": 500, "plot_bgcolor": '#f5f7fa',}
+        layout = {"title": "Death Case Growth Rate", "height": 450, "plot_bgcolor": '#f5f7fa',}
 
 
     return dict(data = data,
@@ -1077,11 +1112,11 @@ def update_fig2(selected_states, selected_measure2):
         NY = [go.Scatter(x = df.Date,
                              y = df['New York'],
                              name = 'New York',
-                             mode = 'lines+text',
-                             line = dict(color = 'rgba(53,92,125, 0.9)', width = 2, shape = 'spline'),
-                             text = ["New York" if i == 32 else "" for i in range(df.shape[0])],
-                             textposition = "top center",
-                             textfont = dict(color = "rgba(53,92,125, 1)")
+                             mode = 'lines',
+                             line = dict(color = 'rgba(53,92,125, 0.9)', width = 3, shape = 'spline'),
+                             #text = ["New York" if i == 38 else "" for i in range(df.shape[0])],
+                             #textposition = "top center",
+                             #textfont = dict(color = "rgba(53,92,125, 1)")
                             ),
               go.Scatter(x = df.Date,
                           y = [df['New York'][i] if pd.to_datetime(lockdown2.Date[lockdown2['State'] == 'New York'].values[0]) == pd.Timestamp(df.Date[i]) else np.nan for i in range(df.shape[0])],
@@ -1099,16 +1134,16 @@ def update_fig2(selected_states, selected_measure2):
                              y = df['California'],
                              name = 'California',
                              mode = 'lines+text',
-                             line = dict(color = 'rgba(237, 123, 24, 0.9)', width = 2, shape = 'spline'),
+                             line = dict(color = 'rgba(53,92,125, 0.9)', width = 3, shape = 'spline'),
                              text = ["California" if i == 38 else "" for i in range(df.shape[0])],
                              textposition = "top center",
-                             textfont = dict(color = "rgba(237, 123, 24, 1)")
+                             textfont = dict(color = "rgba(53,92,125, 1)")
                             ),
               go.Scatter(x = df.Date,
                           y = [df['California'][i] if pd.to_datetime(lockdown2.Date[lockdown2['State'] == 'California'].values[0]) == pd.Timestamp(df.Date[i]) else np.nan for i in range(df.shape[0])],
                           name = 'California',
                           mode = 'markers',
-                          marker = dict(color = 'rgba(237, 123, 24, 1)', size = 10),
+                          marker = dict(color = 'rgba(53,92,125, 1)', size = 10),
                           #text = ["Partial" if pd.to_datetime(lockdown2.Date[lockdown2['Country/Region'] == 'US'].values[0]) == pd.Timestamp(df.Date[i]) else "" for i in range(df.shape[0])],
                           #textposition="top right",
                           #textfont = dict(color = "rgba(53,92,125, 1)")
@@ -1119,7 +1154,7 @@ def update_fig2(selected_states, selected_measure2):
                         name = selected_states[i],
                         mode = 'lines',
                         line = dict(color= f'rgba({np.random.randint(0,256)}, {np.random.randint(0,256)}, {np.random.randint(0,256)},0.9)', 
-                            width = 1, shape = 'spline')) for i in range(len(selected_states))]
+                            width = 0.8, shape = 'spline')) for i in range(len(selected_states))]
     others2 = [go.Scatter(x = df.Date,
                           y = [df[selected_states[i]][j] if pd.to_datetime(lockdown2.Date[lockdown2['State'] == selected_states[i]].values) == pd.Timestamp(df.Date.iloc[j]) else np.nan for j in range(df.shape[0])],
                           name = selected_states[i] + ' (' + str(lockdown2.Type[lockdown2['State'] == selected_states[i]].values[0]) + ')',
@@ -1131,9 +1166,9 @@ def update_fig2(selected_states, selected_measure2):
     data = data + others1 + others2 + NY + CA
     
     if selected_measure2 == "confirmed":
-        layout = {"title": "Confirmed Case Growth Rate ", "height": 700, "plot_bgcolor": '#f5f7fa',}
+        layout = {"title": "Confirmed Case Growth Rate ", "height": 450,  "plot_bgcolor": '#f5f7fa',}
     elif selected_measure2 == "death":
-        layout = {"title": "Death Case Growth Rate", "height": 700, "plot_bgcolor": '#f5f7fa',}
+        layout = {"title": "Death Case Growth Rate", "height": 450, "plot_bgcolor": '#f5f7fa',}
 
     return dict(data = data,
                 layout = layout)
@@ -1187,9 +1222,33 @@ def update_figure(time_lockdown):
     fig.update_layout(
     title_text = 'Lockdown Timeline by States',
     geo_scope='usa',
-    font=dict(size=10),
-    width = 505, #height = 500,
+    font=dict(size=13),
+    width = 510, #height = 500,
     margin=dict(l=0, r=0, t=80, b=0, pad = 0),
+    )
+
+    return fig
+
+##### world
+@app.callback(Output('world_lockdown_map', 'figure'),
+            [Input('world_lockdown_slider', 'value')])
+
+def update_figure(world_time):
+
+    lockdown_new = df_world[df_world['date'] == world_date[world_time]]
+
+    fig = px.choropleth(lockdown_new, locations="iso_alpha",
+                    color="type",
+                    hover_name="region", # column to add to hover information
+                    color_continuous_scale=color_lock
+                    #text= lockdown_new['text']
+                    )
+    fig.update_geos(lataxis_showgrid=False, lonaxis_showgrid=False, 
+                    projection_type="natural earth",showcountries=True)             
+    fig.update_layout(
+    title_text = 'Worldwide Lockdown by Regions',
+    margin=dict(l=0, r=0, t=80, b=0, pad = 0),
+    coloraxis_showscale = False
     )
 
     return fig
@@ -1924,7 +1983,7 @@ def update_fig_s1(selected_pollsters, radio_display1):
 
 def update_output(value):
     src1 = "https://raw.githubusercontent.com/yyyyyokoko/covid-19-challenge/master/twitterViz/images/" + daterange[value] + '.png'
-    img = html.Img(src=src1,  style={'width':'100%', 'display': 'inline-block'})
+    img = html.Img(src=src1,  style={'height':'50%', 'width':'50%', 'display': 'inline-block'})
     return img
 
 @app.callback(
