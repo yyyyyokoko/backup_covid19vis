@@ -382,7 +382,7 @@ FLATTEN_THE_CURVE = [
         html.P("Select multiple countries in the dropdown and control the slider to see the change of the lockdown policy on the maps and the fluctuation of growth rate in confirmed cases and death through time on the line charts."),
         #print(world_confirmedR.columns),
         dbc.Row([
-            html.Label("Select countries to include in the line plot:", style={'marginLeft':'10px'}),
+            html.Label("Select countries to include in the line plot:", style={'marginLeft':'10px', 'color': 'blue'}),
             dcc.Dropdown(
                         id = "selected_countries",
                         options=[{'label': x, 'value': x} for x in list(world_confirmedR.columns[1:])],
@@ -437,7 +437,7 @@ FLATTEN_THE_CURVE = [
         dbc.CardBody([
             dbc.Row([
                 dbc.Col([
-                    html.Label('Select states to include in the line plot: '),
+                    html.Label('Select states to include in the line plot: ',  style={'marginLeft':'10px', 'color': 'blue'}),
                     dcc.Dropdown(
                                 id = "selected_states",
                                 options=[{'label': x, 'value': x} for x in list(us_confirmedR.columns[1:])],
@@ -628,10 +628,40 @@ MAP_LOCKDOWN = [
 MOBILITY =[
     dbc.CardHeader(html.H5('Mobility: Are people really following the stay-at-home rules?')),
     dbc.CardBody([
-        html.P("The Mobility page presented mobility data in the US and main cities around the world. It showed that since March, people around the world had stayed at home more often and stopped traveling around as much. Moreover, in the line chart where the mobility was broken down into 6 categories, there existed some interesting periodical patterns: people stopped going to malls (retails) and taking public transportation since mid-March, when most states started the lockdown. Although most people stopped going to work and stayed at home, as shown in the mobility trends for workplaces and residential neighborhoods, the periodic patterns were more obvious in these two plots: people are more likely not at home and shortly stop by their office on weekends. “Grocery” and “Parks” showed that before lockdown, there were much more people panic buying and hiking than usual. After lockdown, people went grocery shopping and hiking less often as people became more cautious about going outside. ", className="card-text"),
-        html.P("The plots also showed that people were not used to the quarantine life at the beginning of the lockdown, but most people had eventually developed their routines for activities such as grocery shopping. Overall, the mobility page showed that people generally were following the stay-at-home order. ", className="card-text"),
-        html.P("Use the dropdown to select states and counties and adjust the slider to view the change of mobility through time. "),
-        dbc.Row([
+        html.P("This page presents mobility data in the US and some main cities around the world. The mobility data in the US was derived from aggregated and anonymized data used to show popular times for places in Google Maps. These plots show how visits and length of stay at different places change compared to a baseline, which is the median value, for the corresponding day of the week, during the 5-week period Jan 3–Feb 6, 2020. The x-axis represents the timeline, and the y-axis shows the percentage of mobility change compared to the baseline."),
+        html.P("It shows that since March, people around the world have been staying at home more often and stopped traveling around as much. Moreover, in the line chart where the mobility is broken down into 6 categories, there exists some interesting periodical patterns:  "),
+        html.Label('- Retail ', style = {'color': '#b39536', 'font-weight':'bold', 'margin-right': '10px'}), 
+        html.Label('&'),
+        html.Label(' Transit: ',  style = {'color': '#8c868f', 'font-weight':'bold', 'margin-left': '10px'}),
+        html.Label(' People stopped going to malls (retails) and taking public transportation since mid-March, when most states started the lockdown. '),
+        html.Br(),
+        html.Label('-  Work place ',  style = {'color': '#853bd4', 'font-weight':'bold', 'margin-right': '10px'}), 
+        html.Label('&'),
+        html.Label(' Residential Neighborhood: ',  style = {'color': '#cf30bc', 'font-weight':'bold', 'margin-left': '10px'}),
+        html.Label(' These two show almost mirrored opposite trends, but identical periodic pattern, which is very interesting! Also, since around March 16, an obvious weekly pattern starts to emerge. People seem to adjust their life and get used to working-at-home and yet still have a relatively regular weekly schedule. Funny thing is, people seem to shortly stop by their office on weekends! '),    
+
+
+        html.Br(),
+        html.Label('-  Grocery ',  style = {'color': '#52bfbf', 'font-weight':'bold', 'margin-right': '10px'}), 
+        html.Label('&'),
+        html.Label(' Parks: ',  style = {'color': 'green', 'font-weight':'bold', 'margin-left': '10px'}),
+        html.Label(' Similar trends but different details! Right before lockdown, these two places were hot! People rushed into stores to hoard goods and groceries, and hangout in the park more than usual. After lockdown, people go grocery shopping and hiking less often as they become more cautious about going outside. But unlike the pattern shown in the other four areas, the trend in Grocery & Parks still go up to the axis once a while throughout the weeks, as people still need to go get groceries and take a walk from time to time.'),           
+    
+        html.Br(),
+        html.Label('Periodic Pattern: ', style = {'background-color': 'lightgrey', 'margin-right': '20px'}),
+        html.Label('The plots also show that people were not used to the quarantine life at the beginning of the lockdown, but most people quickly adapt and eventually developed their routines for activities such as grocery shopping, working from home, etc, as since around March 16, the plot starts to show a clear weekly pattern. '),
+            
+        html.Br(),
+        html.Label('Turning Point (from positive to negative): ', style = {'background-color': 'lightgrey', 'margin-right': '20px'}),
+        html.Label('The point when the value switches from positive to negative (meaning from more than old days to less than old days) (or the other direction for Residential) varies among places. Transit [Mar 9], Workplace [Mar 9], Residential [Mar 9] are the earliest, probably because most people started working from home after the first week of March. The other turning points are Retail [Mar 13], when most malls and shopping centers were closed since mid-March, and Park [Mar 20] and Grocery [Mar 21]. At the beginning of the quarantine, people were panic buying groceries and they believed that hiking would still be safe. As the number of cases increased, people were more concerned about going outside; therefore, mobility at grocery stores and parks are also decreasing after the third week of March.'),
+
+        html.Br(),
+        html.Label('Overall, the mobility page shows that people are generally following the stay-at-home order.'),
+
+        html.Br(),
+        html.Label('Use the dropdown to select states and counties and adjust the slider to view the change of mobility over time.', style={'color': 'blue'}),
+    
+    dbc.Row([
             dbc.Col([
                 html.Iframe(src = " https://hack-cov19.herokuapp.com/", width="100%", height = '600px')
                 #html.Iframe(src = "https://www.youtube.com/embed/zWfyxknakAs", width="100%", height = '600px')
@@ -704,7 +734,7 @@ SURVEY_MEDIA = [
 
         #     ]),
         html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search results. Surveys showed that after the first death in the US, people had been much more worried about COVID-19. Also, younger people and registered voters were generally less worried about COVID-19 than the others. "),
-        html.P("Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. "),
+        html.P("Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. ", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
                 html.H5("Choose Filter :"),
@@ -765,7 +795,7 @@ markdict = {0: {'label': '3-22'},
 TWEETER = [
     dbc.CardHeader(html.H5('Twitter HoT Words ')),
     dbc.CardBody([
-        html.P("Control the slider to check Twitter trending words on a selected day. The image on the left word cloud of hot debating topics on Twitter. The table on the right displayed the top keywords with their popularities."),
+        html.P("Control the slider to check Twitter trending words on a selected day. The image on the left word cloud of hot debating topics on Twitter. The table on the right displayed the top keywords with their popularities.", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
                 dcc.Slider(
@@ -796,9 +826,10 @@ TWEETER = [
 GOOGLE =[
     dbc.CardHeader(html.H5('Google Search Trend')),
     dbc.CardBody([
+        html.P("The google search results and Twitter hot words showed the change of trending topics since the lockdown. Before the lockdown, people paid close attention to the information about COVID-19, whose main source had changed from the JHU to CDC website. Since the quarantine started, besides the virus, people spent more time searching for online-streaming services (Netflix) and online shopping websites (Amazon). Meanwhile, people still cared about news and trending topics such as the stock and NFL. Discussions about political figures were also trending. More recently, people started searching more about reopening the state and protests. It proved that people’s concerns were mainly related to COVID-19’s impacts and the government’s response, and the concerns might be shifted through time.  "),
+        html.P("Use the slider on the bottom of the bar racing chart to see the change of trending topics in a certain time period.", style={'color': 'blue'}),
+
         dbc.Row([
-            html.P("The google search results and Twitter hot words showed the change of trending topics since the lockdown. Before the lockdown, people paid close attention to the information about COVID-19, whose main source had changed from the JHU to CDC website. Since the quarantine started, besides the virus, people spent more time searching for online-streaming services (Netflix) and online shopping websites (Amazon). Meanwhile, people still cared about news and trending topics such as the stock and NFL. Discussions about political figures were also trending. More recently, people started searching more about reopening the state and protests. It proved that people’s concerns were mainly related to COVID-19’s impacts and the government’s response, and the concerns might be shifted through time.  "),
-            html.P("Use the slider on the bottom of the bar racing chart to see the change of trending topics in a certain time period."),
             dbc.Col([
                 html.Iframe(src = "https://public.flourish.studio/visualisation/2211837/", width="100%", height = '600px')
                 ], width = 6),
@@ -821,7 +852,7 @@ UNEMPLOYMENT = [
         html.P("The Unemployment Page examined the unemployment rate by each US State since 2015. Before the pandemic, the unemployment rate was gradually going down, whereas the unemployment rate started rising again since the outbreak of COVID-19. Especially at the end of March 2020 when most states were under lockdown, the number of unemployment claims had grown significantly. The line chart showed that the most impacted states included those whose major economic sectors were tourism, such as Florida and  Colorado. This page revealed that the unemployment condition in each state is closely related to its economic structure. States which relied more on tourism and manufacturing would expect growth in unemployment rates during the pandemic."),
         html.P("The unemployment rate decreased for the year but sharply increased in Mar 2020. Meanwhile the unemployment claims boosted as more states were locked down and people lost their jobs. Use both buttons on the slider to control both points along the slider to choose the unemployment rate in a certain period of time. The button on the left also controls the map, which compares the unemployment rate among states. "),
         html.P("The US map on the left showed the unemployment rate by states. The line chart on the top right showed the changes of unemployment rates by states. The line chart on the bottom right showed the increasing unemployment claims by weeks."),
-        html.P("Use the dropdown to select multiple states by and compare the unemployment rate and unemployment claims by states. "),
+        html.P("Use the dropdown to select multiple states by and compare the unemployment rate and unemployment claims by states. ", style={'color': 'blue'}),
         dbc.Row([
                 dbc.Col([
                 # html.P([
@@ -895,7 +926,9 @@ UNEMPLOYMENT = [
 LEGAL_TABLE = [
     dbc.CardHeader(html.H5("Legislation Search Table")),
     dbc.CardBody([
-        html.P("The Legislation page demonstrated the COVID-19 related legislations in each state. Search certain legislations by keywords, selected states, or their status. Users can directly access the proposal by zooming in the bar chart on the right and clicking each “book” icon. Detailed information for selected legislations would be displayed in the table on the left. "),
+        html.Label("The Legislation page demonstrates the COVID-19 related legislations in each state."), 
+        html.Label('Search certain legislations by keywords, select states, or their status.' , style={'color': 'blue'}),
+        html.Label("Users can directly access the proposal by zooming in the bar chart on the right and clicking each “book” icon. Detailed information for selected legislations would be displayed in the table on the left. "),
         dbc.Row([
             dbc.Col([
                 html.Label("Search By Keywords", style = {'fontSize': 15}),
@@ -2358,4 +2391,4 @@ def update_table(search_text, selected_state, selected_status):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
