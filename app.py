@@ -709,7 +709,7 @@ INTRO =[
         html.P(['   16. ', html.A("National Public Radio News", href='https://www.npr.org/2020/03/21/819511621/coronavirus-deaths-spike-abroad-as-new-york-city-becomes-u-s-virus-epicenter')]),
         html.Br(),
         html.H6("Tools & Packages:"),
-        html.P('Python, Dash, Plotly, Flourish')
+        html.P('Python, Dash, Plotly, Flourish, Heroku')
         ])
     ]
 
@@ -852,7 +852,7 @@ UNEMPLOYMENT = [
         html.P("The Unemployment Page examined the unemployment rate by each US State since 2015. Before the pandemic, the unemployment rate was gradually going down, whereas the unemployment rate started rising again since the outbreak of COVID-19. Especially at the end of March 2020 when most states were under lockdown, the number of unemployment claims had grown significantly. The line chart showed that the most impacted states included those whose major economic sectors were tourism, such as Florida and  Colorado. This page revealed that the unemployment condition in each state is closely related to its economic structure. States which relied more on tourism and manufacturing would expect growth in unemployment rates during the pandemic."),
         html.P("The unemployment rate decreased for the year but sharply increased in Mar 2020. Meanwhile the unemployment claims boosted as more states were locked down and people lost their jobs. Use both buttons on the slider to control both points along the slider to choose the unemployment rate in a certain period of time. The button on the left also controls the map, which compares the unemployment rate among states. "),
         html.P("The US map on the left showed the unemployment rate by states. The line chart on the top right showed the changes of unemployment rates by states. The line chart on the bottom right showed the increasing unemployment claims by weeks."),
-        html.P("Use the dropdown to select multiple states by and compare the unemployment rate and unemployment claims by states. ", style={'color': 'blue'}),
+        html.P("Use the dropdown to select multiple states and compare the unemployment rate and unemployment claims by states. ", style={'color': 'blue'}),
         dbc.Row([
                 dbc.Col([
                 # html.P([
