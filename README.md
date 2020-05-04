@@ -1,9 +1,4 @@
-# How to deploy a simple Plotly Dash app on Heroku
+The pandemic of COVID-19 has become one of the major challenges of global public health. To help the public and decision-makers better understand the trend and the influence of COVID-19, this project not only creates visualizations to demonstrate the underlying patterns of COVID-19 and its impacts, but also added interactive features which allow users to focus on many of the relevant aspects and obtain interesting findings through the rich information. The website contains six tabs, representing COVID-19’s overview and its impacts on Lockdown, Mobility, Public Opinion, Unemployment, and Legislation to answer if the curve has been flattened through various perspectives such as social media, mobility, unemployment, etc. 
 
-* You can view the finished app on [Heroku](https://flying-dog.herokuapp.com/).
-* Take a moment to read my [Medium post about deploying Dash apps](https://medium.com/@austinlasseter/how-to-deploy-a-simple-plotly-dash-app-to-heroku-622a2216eb73).
-* I also have a gallery of simple Dash apps for learning [here](https://github.com/austinlasseter/plotly_dash_tutorial/blob/master/06%20Heroku%20examples/list%20of%20resources.md).
-* If you'd like to learn even more about Plotly Dash, check out my [tutorial repo](https://github.com/austinlasseter/plotly_dash_tutorial) on github!.
-* If you'd like to tinker with the colors of your app, try using HEX codes from [HTML Color Codes](https://htmlcolorcodes.com/).
-* The `assets` folder contains a file called `favicon.ico` -- you can find and download customized favicons [here](https://www.favicon.cc/). Just replace the current favicon with a new one.
-* Plotly Dash apps can only be viewed in a modern browser (like Chrome or Mozilla). They won't render in antediluvian browsers such as Microsoft.
+Our project is built on Python Plotly and Dash, then the website is deployed via Heroku. 
+To run the code, clone the repository and type `python3 app.py` in your terminal. 
