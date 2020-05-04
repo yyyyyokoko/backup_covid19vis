@@ -721,16 +721,15 @@ TWEETER = [
             ]),
         dbc.Row([
             dbc.Col([
-                html.Div(id="image")
-                ], width = 6),
+                html.Div(id="image", style = {'width': '100%'})
+                ], width = 8),
             dbc.Col([
-                dcc.Graph(id ='hot-table', style={'display': 'inline-block'})
-                ], width = 6)
+                dcc.Graph(id ='hot-table', style={'display': 'inline-block','width':'100%'})
+                ], width = 4)
 
             ])
 
         ])
-
 ]
 
 
