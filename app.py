@@ -279,6 +279,68 @@ symbols3 = pd.DataFrame({'population':['All Adults', 'Registered Voters', 'Likel
                                     ]}).set_index('population').to_dict()['symbol']
 
 
+### original
+approval = pd.read_csv('covid-19-polls-master/covid_approval_polls.csv')
+
+approval.drop(['start_date','subject', 'tracking','text','url'], axis = 1, inplace=True)
+approval.replace(np.nan, 'Others', inplace=True)
+
+approval['party'].replace('all', 'All', inplace = True)
+approval['party'].replace('R', 'Republicans', inplace = True)
+approval['party'].replace('I', 'Independents', inplace = True)
+approval['party'].replace('D', 'Democrats', inplace = True)
+
+### adjusted
+approval_adj = pd.read_csv("covid-19-polls-master/covid_approval_polls_adjusted.csv")
+
+approval_adj.drop(['subject','startdate','multiversions','tracking','timestamp','url'],
+                axis = 1, inplace = True)
+approval_adj.rename(columns = {'enddate': 'end_date'}, inplace = True)
+approval_adj['end_date'] = pd.to_datetime(approval_adj['end_date'])
+
+approval_adj['population'].replace('a', 'All Adults', inplace = True)
+approval_adj['population'].replace('rv', 'Registered Voters', inplace = True)
+approval_adj['population'].replace('lv', 'Likely Voters', inplace = True)
+
+approval_adj['party'].replace('all', 'All', inplace = True)
+approval_adj['party'].replace('R', 'Republicans', inplace = True)
+approval_adj['party'].replace('I', 'Independents', inplace = True)
+approval_adj['party'].replace('D', 'Democrats', inplace = True)
+
+### topline
+approval_topline = pd.read_csv('covid-19-polls-master/covid_approval_toplines.csv')
+
+approval_topline.drop(['subject', 'timestamp'], axis = 1, inplace = True)
+approval_topline['modeldate'] = pd.to_datetime(approval_topline['modeldate'])
+
+approval_topline['party'].replace('all', 'All', inplace = True)
+approval_topline['party'].replace('R', 'Republicans', inplace = True)
+approval_topline['party'].replace('I', 'Independents', inplace = True)
+approval_topline['party'].replace('D', 'Democrats', inplace = True)
+
+### Supportive accessories
+symbols4 = pd.DataFrame({'pollster':approval_adj.pollster.unique(),
+                          'symbol': ['diamond','circle','cross', 'x','hourglass', 'cross','triangle-up','square','cross','hexagram','diamond',
+                                     'triangle-up','square','triangle-right',
+                                     'diamond-tall','y-down','x',
+                                     'x','hourglass', 'triangle-right','star', 'hexagram','x',
+                                     'diamond','circle','cross', 'square','triangle-right','cross',
+                                     'diamond-tall','y-down','star'
+                                     'star','circle','hexagram','diamond','star'
+                                    ]}).set_index('pollster').to_dict()['symbol']
+symbols5 = pd.DataFrame({'sponsor':approval.sponsor.unique(),
+                          'symbol': ['diamond','circle','cross', 
+                                     'triangle-up','square','triangle-right',
+                                     'diamond-tall','square','x','x','hourglass','star', 'hexagram',
+                                     'diamond','circle','cross', 
+                                     'square','triangle-right','cross','star',
+                                     'star','hexagram'
+                                    ]}).set_index('sponsor').to_dict()['symbol']
+
+symbols6 = pd.DataFrame({'party': ['Democrats', 'Republicans', 'Independents'],
+                          'symbol': ['triangle-up', 'star', 'square']}).set_index('party').to_dict()['symbol']
+
+
 ####################################################################################
 #######################   Page 3 - Plot2.   Twiter      ##########################
 ####################################################################################
@@ -376,10 +438,10 @@ NAVBAR = dbc.Navbar(
 FLATTEN_THE_CURVE = [
     dbc.CardHeader(html.H5("Flatten The Curve - US")),
     dbc.CardBody([
-        html.P("This page evaluates the lockdown and growth rates timeline on two levels: national-wise and global-wise. In the US, 42 states were on lockdown by Apr 7 (marked red), whereas most states in the central US were already partially open by Apr 21. Most states which are partially open claimed the stay-at-home earlier, whereas states with main metropolitan areas and cities generally started the lockdown later since there were more effects and concerns to lockdown major cities.", className="card-text"),
-        html.P("On the global level, the line chart demonstrates which government handled the pandemic effectively. For instance, South Korea started the lockdown right at the first outbreak and effectively stopped the spreading of the virus. Unfortunately, Italy missed the best time to lock down the country, as shown that the stay-at-home order was not issued until several outbreaks. ", className="card-text"),
+        html.P("This page evaluates the lockdown and growth rates timeline on two levels: national-wise and global-wise. In the US, 42 states were on lockdown by Apr 7 (marked red), whereas most states in the central US were already partially open by Apr 21. Most states which are partially open claimed the stay-at-home order earlier, whereas states with main metropolitan areas and cities generally started the lockdown later since there were more effects and concerns to lockdown major cities.", className="card-text"),
+        html.P("On the global level, the line chart demonstrates which government handled the pandemic effectively. For instance, South Korea started the lockdown right at the first outbreak and effectively stopped the spreading of the virus. Unfortunately, Italy missed the best time to lock down the country, as shown that the stay-at-home order was not issued until several outbreaks.", className="card-text"),
         html.P("The visualization shows that the stay-at-home order has helped flatten the curve, since the growth rates of both new cases and death have been steadily decreasing since the lockdowns on both national-wide and world-wide levels.", className="card-text"),
-        html.P("Select multiple countries in the dropdown and control the slider to see the change of the lockdown policy on the maps and the fluctuation of growth rate in confirmed cases and death through time on the line charts."),
+        html.P("Select multiple countries in the dropdown and control the slider to see the change of the lockdown policy on the maps and the fluctuation of growth rate in confirmed cases and death through time on the line charts.", style={'color': 'blue'}),
         #print(world_confirmedR.columns),
         dbc.Row([
             html.Label("Select countries to include in the line plot:", style={'marginLeft':'10px', 'color': 'blue'}),
@@ -628,32 +690,32 @@ MAP_LOCKDOWN = [
 MOBILITY =[
     dbc.CardHeader(html.H5('Mobility: Are people really following the stay-at-home rules?')),
     dbc.CardBody([
-        html.P("This page presents mobility data in the US and some main cities around the world. The mobility data in the US was derived from aggregated and anonymized data used to show popular times for places in Google Maps. These plots show how visits and length of stay at different places change compared to a baseline, which is the median value, for the corresponding day of the week, during the 5-week period Jan 3–Feb 6, 2020. The x-axis represents the timeline, and the y-axis shows the percentage of mobility change compared to the baseline."),
-        html.P("It shows that since March, people around the world have been staying at home more often and stopped traveling around as much. Moreover, in the line chart where the mobility is broken down into 6 categories, there exists some interesting periodical patterns:  "),
+        html.P("This page presents mobility data in the US and some main cities around the world. The mobility data in the US is derived from aggregated and anonymized data used to show popular times for places in Google Maps. These plots show how visits and length of stay at different places change compared to a baseline, which is the median value, for the corresponding day of the week, during the 5-week period Jan 3–Feb 6, 2020. The x-axis represents the timeline, and the y-axis shows the percentage of mobility change compared to the baseline."),
+        html.P("It shows that since March, people around the world have been staying at home more often and stopped traveling around as much. Moreover, in the line chart where the mobility is broken down into 6 categories, there are some interesting periodical patterns: "),
         html.Label('- Retail ', style = {'color': '#b39536', 'font-weight':'bold', 'margin-right': '10px'}), 
         html.Label('&'),
         html.Label(' Transit: ',  style = {'color': '#8c868f', 'font-weight':'bold', 'margin-left': '10px'}),
-        html.Label(' People stopped going to malls (retails) and taking public transportation since mid-March, when most states started the lockdown. '),
+        html.Label('People stopped going to malls (retails) and taking public transportation since mid-March, when most states started the lockdown.'),
         html.Br(),
         html.Label('-  Work place ',  style = {'color': '#853bd4', 'font-weight':'bold', 'margin-right': '10px'}), 
         html.Label('&'),
         html.Label(' Residential Neighborhood: ',  style = {'color': '#cf30bc', 'font-weight':'bold', 'margin-left': '10px'}),
-        html.Label(' These two show almost mirrored opposite trends, but identical periodic pattern, which is very interesting! Also, since around March 16, an obvious weekly pattern starts to emerge. People seem to adjust their life and get used to working-at-home and yet still have a relatively regular weekly schedule. Funny thing is, people seem to shortly stop by their office on weekends! '),    
+        html.Label(' These two show almost mirrored opposite trends, but the identical periodic pattern, which is very interesting! Also, since around March 16, an obvious weekly pattern started to emerge. People seemed to adjust their life and get used to working-at-home and yet still maintain a relatively regular weekly schedule. Funny thing is, people seemed to shortly stop by their office on weekends! '),    
 
 
         html.Br(),
         html.Label('-  Grocery ',  style = {'color': '#52bfbf', 'font-weight':'bold', 'margin-right': '10px'}), 
         html.Label('&'),
         html.Label(' Parks: ',  style = {'color': 'green', 'font-weight':'bold', 'margin-left': '10px'}),
-        html.Label(' Similar trends but different details! Right before lockdown, these two places were hot! People rushed into stores to hoard goods and groceries, and hangout in the park more than usual. After lockdown, people go grocery shopping and hiking less often as they become more cautious about going outside. But unlike the pattern shown in the other four areas, the trend in Grocery & Parks still go up to the axis once a while throughout the weeks, as people still need to go get groceries and take a walk from time to time.'),           
+        html.Label(' Similar trends but different details! Right before lockdown, these two places were hot! People rushed into stores to hoard goods and groceries, and hangout in the park more than usual. After lockdown, people have been going grocery shopping and hiking less often as they become more cautious about going outside. But unlike the pattern shown in the other four areas, trends in Grocery & Parks still go up to the axis once a while throughout the weeks, as people still need to go get groceries and take a walk from time to time.'),           
     
         html.Br(),
         html.Label('Periodic Pattern: ', style = {'background-color': 'lightgrey', 'margin-right': '20px'}),
-        html.Label('The plots also show that people were not used to the quarantine life at the beginning of the lockdown, but most people quickly adapt and eventually developed their routines for activities such as grocery shopping, working from home, etc, as since around March 16, the plot starts to show a clear weekly pattern. '),
+        html.Label('The plots also show that people were not used to the quarantine life at the beginning of the lockdown, but most people quickly adapted and eventually developed their routines for activities such as grocery shopping, working from home, etc. Since around March 16, the plot started to show a clear weekly pattern.'),
             
         html.Br(),
         html.Label('Turning Point (from positive to negative): ', style = {'background-color': 'lightgrey', 'margin-right': '20px'}),
-        html.Label('The point when the value switches from positive to negative (meaning from more than old days to less than old days) (or the other direction for Residential) varies among places. Transit [Mar 9], Workplace [Mar 9], Residential [Mar 9] are the earliest, probably because most people started working from home after the first week of March. The other turning points are Retail [Mar 13], when most malls and shopping centers were closed since mid-March, and Park [Mar 20] and Grocery [Mar 21]. At the beginning of the quarantine, people were panic buying groceries and they believed that hiking would still be safe. As the number of cases increased, people were more concerned about going outside; therefore, mobility at grocery stores and parks are also decreasing after the third week of March.'),
+        html.Label('The point when the percentage of mobility change (compared to the historical baseline) switches from positive to negative (meaning from more than old days to less than old days, or the other direction for Residential) varies among places. Transit [Mar 9], Workplace [Mar 9], Residential [Mar 9] are the earliest, probably because most people started working from home after the first week of March. The other turning points are Retail [Mar 13], when most malls and shopping centers were closed since mid-March. Lastly, Parks [Mar 20] and Grocery [Mar 21] reached their turning points in late March, because at the beginning of the quarantine, people were panic buying groceries and they believed that hiking would still be safe. As the number of cases increased, people were more concerned about going outside.'),
 
         html.Br(),
         html.Label('Overall, the mobility page shows that people are generally following the stay-at-home order.'),
@@ -683,9 +745,8 @@ INTRO =[
             dbc.Col([
                 html.Img(src = "https://media.npr.org/assets/img/2020/03/21/ap_20081027616567-3b72d64770e83cd39f74c16df178c55feef9b8d6-s800-c85.jpg", width = '100%')
                 ], width = 6),
-
             dbc.Col([
-                html.P("The pandemic of COVID-19 has become one of the major challenges of global public health. To help the public and decision-makers better understand the trend and the influence of COVID-19, this project not only creates visualizations to demonstrate the underlying patterns of COVID-19 and its impacts, but also added interactive features which allow users to focus on many of the relevant aspects and obtain interesting findings through the rich information. The website contains six tabs, representing COVID-19’s overview and its impacts on Lockdown, Mobility, Public Opinion, Unemployment, and Legislation to answer if the curve has been flattened through various perspectives such as social media, mobility, unemployment, etc. ", className="card-text"),
+                html.P("The pandemic of COVID-19 has become one of the major challenges of global public health. To help the public and decision-makers better understand the trend and the influence of COVID-19, this project not only creates visualizations to demonstrate the underlying patterns of COVID-19 and its impacts, but also added interactive features which allow users to focus on many of the relevant aspects and obtain interesting findings through the extensive information. The website contains six tabs, representing COVID-19’s overview and its impacts on Lockdown, Mobility, Public Opinion, Unemployment, and Legislation to answer if the curve has been flattened through various perspectives such as social media, mobility, unemployment, etc.", className="card-text"),
                 html.Br()
                 ], width = 6)
             ]),
@@ -716,24 +777,23 @@ INTRO =[
 SURVEY_MEDIA = [
     dbc.CardHeader(html.H5("Survey")),
     dbc.CardBody([
-        # dbc.Row([
-        #     dbc.Col([
-        #         html.H5("Select Topics :")
-        #         ], width = 2),
-        #     dbc.Col([
-        #         dcc.Dropdown(
-        #             id = 'selected_question',
-        #             options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
-        #                        {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
-        #                        {'label': 'Approval of Trump’s response varies widely by party', 'value': 'Q_approval_1'},
-        #                        {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval_2'}]
+        dbc.Row([
+            dbc.Col([
+                html.H5("Select Topics :")
+                ], width = 2),
+            dbc.Col([
+                dcc.Dropdown(
+                    id = 'selected_question',
+                    options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
+                               {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
+                               {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval'}],
+                    value = 'Q_concern_infec'
+                    )
 
-        #             )
+                ], width = 10),
 
-        #         ], width = 10),
-
-        #     ]),
-        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search results. Surveys showed that after the first death in the US, people had been much more worried about COVID-19. Also, younger people and registered voters were generally less worried about COVID-19 than the others. "),
+            ]),
+        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search trends. Surveys show that after the first death in the US, people started to become more worried about COVID-19. Also, registered voters and likely voters are generally less worried about COVID-19 than average Americans. Surveys sponsored by Fortune always show a less optimistic attitude towards the economy compared to average surveys, whereas surveys sponsored by CNBC generally receive more optimistic responses."),
         html.P("Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. ", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
@@ -747,7 +807,8 @@ SURVEY_MEDIA = [
                         options=[{'label': 'All   ', 'value': 'All'},
                                 {'label': 'By Pollster   ', 'value': 'by_pollster'},
                                 {'label': 'By Sponsor  ', 'value': 'by_sponsor'},
-                                {'label': 'By Population', 'value': 'by_population'}
+                                {'label': 'By Population', 'value': 'by_population'},
+                                {'label': 'By Party', 'value': 'by_party'}
                                 ],
                         value='All',
                         labelStyle={'display': 'block'}, style={'fontSize': 14, 'marginTop': '5px'}
@@ -795,7 +856,8 @@ markdict = {0: {'label': '3-22'},
 TWEETER = [
     dbc.CardHeader(html.H5('Twitter HoT Words ')),
     dbc.CardBody([
-        html.P("Control the slider to check Twitter trending words on a selected day. The image on the left word cloud of hot debating topics on Twitter. The table on the right displayed the top keywords with their popularities.", style={'color': 'blue'}),
+        html.P("The image on the left is a word cloud for hot debating topics on Twitter. The table on the right displays the top keywords with their popularities. The yellow text means the rank of popularity increased compared to the day before, green means the rank dropped and red means it is a new topic."),
+        html.P("Control the slider to check Twitter trending words on a selected day. ", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
                 dcc.Slider(
@@ -814,7 +876,7 @@ TWEETER = [
                 html.Div(id="image", style = {'width': '100%', 'margin-top': '100px'})
                 ], width = 7),
             dbc.Col([
-                dcc.Graph(id ='hot-table', style={'display': 'inline-block','width':'100%'})
+                dcc.Graph(id ='hot-table', style={'display': 'inline-block','width':'100%', 'margin-top': '30px'})
                 ], width = 5)
 
             ])
@@ -826,7 +888,7 @@ TWEETER = [
 GOOGLE =[
     dbc.CardHeader(html.H5('Google Search Trend')),
     dbc.CardBody([
-        html.P("The google search results and Twitter hot words showed the change of trending topics since the lockdown. Before the lockdown, people paid close attention to the information about COVID-19, whose main source had changed from the JHU to CDC website. Since the quarantine started, besides the virus, people spent more time searching for online-streaming services (Netflix) and online shopping websites (Amazon). Meanwhile, people still cared about news and trending topics such as the stock and NFL. Discussions about political figures were also trending. More recently, people started searching more about reopening the state and protests. It proved that people’s concerns were mainly related to COVID-19’s impacts and the government’s response, and the concerns might be shifted through time.  "),
+        html.P("The google search keywords and Twitter hot words show the change of trending topics since the lockdown. Before the lockdown, people paid close attention to the information about COVID-19, whose main source had changed from the JHU to CDC website. Since the quarantine started, besides the virus, people started to spend more time searching for online-streaming services (Netflix) and online shopping websites (Amazon). Google Classroom shows a steadily high search trend. Meanwhile, people still care about news and trending topics such as the stock, oil trading, stimulus check, NFL, Tiger King, Kim Jong Un, etc. Discussions about political figures, especially the senators and presidential candidates, were also trending, since people paid close attention to how they handle the pandemic. More recently, people started searching more about reopening the state and protests. It proves that people’s concerns are mainly related to COVID-19’s impacts and the government’s response, and the concerns shift through time."),
         html.P("Use the slider on the bottom of the bar racing chart to see the change of trending topics in a certain time period.", style={'color': 'blue'}),
 
         dbc.Row([
@@ -849,10 +911,11 @@ GOOGLE =[
 UNEMPLOYMENT = [
     dbc.CardHeader(html.H5("Unemployment")),
     dbc.CardBody([
-        html.P("The Unemployment Page examined the unemployment rate by each US State since 2015. Before the pandemic, the unemployment rate was gradually going down, whereas the unemployment rate started rising again since the outbreak of COVID-19. Especially at the end of March 2020 when most states were under lockdown, the number of unemployment claims had grown significantly. The line chart showed that the most impacted states included those whose major economic sectors were tourism, such as Florida and  Colorado. This page revealed that the unemployment condition in each state is closely related to its economic structure. States which relied more on tourism and manufacturing would expect growth in unemployment rates during the pandemic."),
-        html.P("The unemployment rate decreased for the year but sharply increased in Mar 2020. Meanwhile the unemployment claims boosted as more states were locked down and people lost their jobs. Use both buttons on the slider to control both points along the slider to choose the unemployment rate in a certain period of time. The button on the left also controls the map, which compares the unemployment rate among states. "),
-        html.P("The US map on the left showed the unemployment rate by states. The line chart on the top right showed the changes of unemployment rates by states. The line chart on the bottom right showed the increasing unemployment claims by weeks."),
-        html.P("Use the dropdown to select multiple states and compare the unemployment rate and unemployment claims by states. ", style={'color': 'blue'}),
+        html.P("This Page examines the unemployment rate by each US State since 2015. Before the pandemic, the unemployment rate was gradually going down, whereas the unemployment rate started rising again since the outbreak of COVID-19. Especially at the end of March 2020, when most states started the lockdown, the number of unemployment claims has grown significantly. This page reveals that the unemployment condition in each state is closely related to its economic structure. The most impacted states include those whose major economic sectors are tourism, such as Florida and Colorado. States which rely more on manufacturing would also expect growth in unemployment rates during the pandemic."),
+        html.P("The unemployment rate decreased for the year but sharply increased in Mar 2020. Meanwhile,  the unemployment claims boosted as more states were locked down and people lost their jobs."),
+        html.P("Use both pointers on the slider to control a certain period of time in the plot. The left pointer also controls the timestamp for the map, which compares the unemployment rate among states.", style={'color': 'blue'}),
+        html.P("The US map on the left shows the unemployment rate by states. The line chart on the top right describes the changes in the unemployment rate by states. The line chart on the bottom right reveals the increasing unemployment claims by weeks."),
+        html.P("Use the dropdown to select multiple states to include in the line chart and compare the unemployment rate and unemployment claims.", style={'color': 'blue'}),
         dbc.Row([
                 dbc.Col([
                 # html.P([
@@ -926,9 +989,9 @@ UNEMPLOYMENT = [
 LEGAL_TABLE = [
     dbc.CardHeader(html.H5("Legislation Search Table")),
     dbc.CardBody([
-        html.Label("The Legislation page demonstrates the COVID-19 related legislations in each state."), 
-        html.Label('Search certain legislations by keywords, select states, or their status.' , style={'color': 'blue'}),
-        html.Label("Users can directly access the proposal by zooming in the bar chart on the right and clicking each “book” icon. Detailed information for selected legislations would be displayed in the table on the left. "),
+        html.Label("This page demonstrates the COVID-19 related legislation in each state. "), 
+        html.Label('Search certain legislations by keywords (separate each keyword by comma and press enter), states, or their status. On the right side, users can directly browse through the proposal code by zooming in the bar chart or sliding mouse over the stack like searching in a book shelf.' , style={'color': 'blue'}),
+        html.Label("Detailed information about each legislation is displayed in the table on the left."),
         dbc.Row([
             dbc.Col([
                 html.Label("Search By Keywords", style = {'fontSize': 15}),
@@ -1801,19 +1864,55 @@ def update_figure(world_time):
 ####################################################################################
 ################ Survey Plot
 ### buttons
+
 @app.callback(
     [Output('selected_pollsters', 'options'),
      Output('selected_pollsters', 'value')],
-    [Input('radio_display1', 'value')])
-def set_survey_options(which_one):
-    if which_one == "All":
-        return [[{'label': 'All', 'value': 'all'}], ['all']]
-    elif which_one == "by_pollster":
-        return [[{'label': x, 'value': x} for x in list(concern_adj_econ.pollster.unique())], ['Morning Consult']]
-    elif which_one == "by_sponsor":
-        return [[{'label': x, 'value': x} for x in sponsors], ['New York Times', 'CNBC', 'Fortune']]
-    elif which_one == 'by_population':
-        return [[{'label': x, 'value': x} for x in list(concern_adj_econ.population.unique())], ['All Adults', 'Registered Voters']]
+    [Input('selected_question', 'value'),
+     Input('radio_display1', 'value')])
+
+def set_survey_options(which_question, which_radio):
+    #print('which_question', which_question)
+
+    if which_question == 'Q_concern_econ':
+      if which_radio == 'by_party':
+          return [[{'label': 'All', 'value': 'all'}], ['all']]
+      if which_radio == "All":
+          return [[{'label': 'All', 'value': 'all'}], ['all']]
+      elif which_radio == "by_pollster":
+          return [[{'label': x, 'value': x} for x in list(concern_adj_econ.pollster.unique())], ['Morning Consult']]
+      elif which_radio == "by_sponsor":
+          return [[{'label': x, 'value': x} for x in list(concern_econ.sponsor.unique())], ['New York Times', 'CNBC', 'Fortune']]
+      elif which_radio == 'by_population':
+          return [[{'label': x, 'value': x} for x in list(concern_adj_econ.population.unique())], ['All Adults', 'Registered Voters']]
+    
+    elif which_question == 'Q_concern_infec':
+      if which_radio == 'by_party':
+          return [[{'label': 'All', 'value': 'all'}], ['all']]
+      if which_radio == "All":
+          return [[{'label': 'All', 'value': 'all'}], ['all']]
+      elif which_radio == "by_pollster":
+          return [[{'label': x, 'value': x} for x in list(concern_adj_infec.pollster.unique())], ['YouGov', 'SurveyUSA', 'Optimus','Quinnipiac University','Harris Insights & Analytics']]
+      elif which_radio == "by_sponsor":
+          return [[{'label': x, 'value': x} for x in list(concern_infec.sponsor.unique())], ['ABC News', 'CBS News', 'CNBC', 'Economist', 'Fortune', 'USA Today']]
+      elif which_radio == 'by_population':
+          return [[{'label': x, 'value': x} for x in list(concern_adj_infec.population.unique())], ['All Adults', 'Registered Voters']]
+    
+    elif which_question == 'Q_approval':
+      if which_radio == "All":
+          return [[{'label': 'All', 'value': 'all'}], ['all']]
+      elif which_radio == "by_pollster":
+          return [[{'label': x, 'value': x} for x in list(approval_adj.pollster.unique())], ['YouGov','Morning Consult','SurveyMonkey']]
+      elif which_radio == "by_sponsor":
+          return [[{'label': x, 'value': x} for x in list(approval.sponsor.unique())], ['ABC News', 'CBS News', 'CNBC', 'CNN', 'USA Today', 'Economist','Politico']]
+      elif which_radio == 'by_population':
+          return [[{'label': x, 'value': x} for x in list(approval_adj.population.unique())], ['All Adults', 'Registered Voters']]
+      elif which_radio == 'by_party':
+          return [[{'label': x, 'value': x} for x in ['Democrats', 'Republicans', 'Independents']], ['Democrats', 'Republicans', 'Independents']]
+    
+    
+    
+
 
 
 @app.callback(
@@ -1824,251 +1923,461 @@ def set_survey_value(available_options):
 
 
 @app.callback(Output("survey_plot1", "figure"),
-            [Input("selected_pollsters", "value"),
+            [Input("selected_question", "value"),
+             Input("selected_pollsters", "value"),
              Input("radio_display1", "value")])
 
-def update_fig_s1(selected_pollsters, radio_display1):
+def update_fig_s1(selected_question, selected_pollsters, radio_display1):
     data = []
     topline = []
+    topline1 = []
     All = []
     others1 = []
     others2 = []
     others3 = []
     others4 = []
 
-    topline = [go.Scatter(x = concern_topline_econ.modeldate,
-                             y = concern_topline_econ.very_estimate,
-                             name = 'very (AVERAGE)',
+    if selected_question == 'Q_approval':
+
+      df_topline = approval_topline
+      df_adj = approval_adj
+      df_original = approval
+
+      topline1 = [go.Scatter(x = df_topline[df_topline['party'] == 'All'].modeldate,
+                             y = df_topline[df_topline['party'] == 'All'].approve_estimate,
+                             name = 'approve',
+                             mode = 'lines',
+                             line = dict(color = "Green")
+                            ),
+                 go.Scatter(x = df_topline[df_topline['party'] == 'All'].modeldate,
+                             y = df_topline[df_topline['party'] == 'All'].disapprove_estimate,
+                             name = 'disapprove',
                              mode = 'lines',
                              line = dict(color = "Red")
                             ),
-               go.Scatter(x = concern_topline_econ.modeldate,
-                             y = concern_topline_econ.somewhat_estimate,
-                             name = 'somewhat (AVERAGE)',
-                             mode = 'lines',
-                             line = dict(color = "Pink")
-                            ),
-               go.Scatter(x = concern_topline_econ.modeldate,
-                             y = concern_topline_econ.not_very_estimate,
-                             name = 'not very (AVERAGE)',
-                             mode = 'lines',
-                             line = dict(color = "#B6D7B9")
-                            ),
-               go.Scatter(x = concern_topline_econ.modeldate,
-                             y = concern_topline_econ.not_at_all_estimate,
-                             name = 'not at all (AVERAGE)',
-                             mode = 'lines',
-                             line = dict(color = "Green")
-                            ), 
-                go.Scatter(x=['2020-02-29','2020-02-29', '2020-03-09', '2020-03-12','2020-03-27', '2020-03-27', '2020-04-19'],
-                            y=[76, 73, -3, 71, 74, 71, 71],
-                            text=["1st death reported",
-                                "in the US",
-                                "First Trading Curb",
-                                'Second Trading Curb',
-                                "Trump signs",
-                                "Stimulus bill",
-                                "U.S Oil Price Hits $15"],
-                            mode="text",
-                            showlegend=False
-                        ),
-                go.Scatter(x = ['2020-02-29', '2020-02-29'],
-                         y = [0,70],
-                         mode = 'lines',
-                         line = dict(color = "grey",width=1, dash="dashdot"),
-                         showlegend=False
-                        ),
-                go.Scatter(x = ['2020-03-09', '2020-03-09'],
-                         y = [0,70],
-                         mode = 'lines',
-                         line = dict(color = "grey",width=1, dash="dashdot"),
-                         showlegend=False
-                        ),
-                go.Scatter(x = ['2020-03-12', '2020-03-12'],
-                         y = [0,70],
-                         mode = 'lines',
-                         line = dict(color = "grey",width=1, dash="dashdot"),
-                         showlegend=False
-                        ),
-                go.Scatter(x = ['2020-03-27', '2020-03-27'],
-                         y = [0,70],
-                         mode = 'lines',
-                         line = dict(color = "grey",width=1, dash="dashdot"),
-                         showlegend=False
-                        ),
-                go.Scatter(x = ['2020-04-19', '2020-04-19'],
-                         y = [0,70],
-                         mode = 'lines',
-                         line = dict(color = "grey",width=1, dash="dashdot"),
-                         showlegend=False
-                        )]
+                 go.Scatter(x=['2020-02-25','2020-02-25','2020-03-03','2020-03-03', '2020-03-13','2020-03-13','2020-03-27', '2020-03-27', '2020-04-19'],
+                              y=[89, 84,105, 100, 94, 90, 100, 94, 96],
+                              text=['1st case', 'in the US',
+                                  "Trump donated salary",
+                                  "to fight the virus",
+                                  'Trump declares', 'national emergency',
+                                  "Trump signs",
+                                  "Stimulus bill",
+                                  "U.S Oil Price Hits $15"],
+                              mode="text",
+                              showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-02-26', '2020-02-26'],
+                           y = [0,85],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-03', '2020-03-03'],
+                           y = [0,98],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-13', '2020-03-13'],
+                           y = [0,90],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-27', '2020-03-27'],
+                           y = [0,85],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-04-19', '2020-04-19'],
+                           y = [0,85],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          )]
 
-
-    if radio_display1 == 'All':
-        All = [go.Scatter(x = concern_adj_econ.end_date,
-                              y = concern_adj_econ.very_adjusted,
-                              name = "very",
+      if radio_display1 == 'All':
+        All = [go.Scatter(x = df_adj.end_date,
+                              y = df_adj.approve_adjusted,
+                              name = "approve",
                               mode = 'markers',
-                              marker = dict(size = concern_adj_econ.samplesize*0.005,
-                                            color = "red",
-                                            opacity = concern_adj_econ.weight / max(concern_adj_econ.weight)
+                              marker = dict(size = 8,
+                                            color = "green",
+                                            opacity = df_adj.weight / max(df_adj.weight)
                                            )),
-               go.Scatter(x = concern_adj_econ.end_date,
-                              y = concern_adj_econ.somewhat_adjusted,
-                              name = "somewhat",
+               go.Scatter(x = df_adj.end_date,
+                              y = df_adj.disapprove_adjusted,
+                              name = "disapprove",
                               mode = 'markers',
-                              marker = dict(size = concern_adj_econ.samplesize*0.005,
-                                           color = "pink",
-                                           opacity = concern_adj_econ.weight / max(concern_adj_econ.weight)
-                                           )),
-               go.Scatter(x = concern_adj_econ.end_date,
-                              y = concern_adj_econ.not_very_adjusted,
-                              name = "not_very",
-                              mode = 'markers',
-                              marker = dict(size = concern_adj_econ.samplesize*0.005,
-                                           color = "#B6D7B9",
-                                           opacity = concern_adj_econ.weight / max(concern_adj_econ.weight)
-                                           )),
-               go.Scatter(x = concern_adj_econ.end_date,
-                              y = concern_adj_econ.not_at_all_adjusted,
-                              name = "not_at_all",
-                              mode = 'markers',
-                              marker = dict(size = concern_adj_econ.samplesize*0.005,
-                                           color = "Green",
-                                           opacity = concern_adj_econ.weight / max(concern_adj_econ.weight)
+                              marker = dict(size = 8,
+                                           color = "red",
+                                           opacity = df_adj.weight / max(df_adj.weight)
                                            ))
                 ]
 
-    elif radio_display1 == 'by_pollster':
-        others1 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].very_adjusted,
-                                name = 'very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = [x+5 if x<3 else x for x in concern_adj_econ.samplesize*0.006],
-                                            color = "red",
-                                            opacity = [x+0.1 if x<0.5 else x for x in concern_adj_econ.weight / max(concern_adj_econ.weight)],
-                                            symbol = symbols1[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others2 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].somewhat_adjusted,
-                                name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = [x+5 if x<3 else x for x in concern_adj_econ.samplesize*0.006],
-                                            color = "pink",
-                                            opacity = [x+0.1 if x<0.5 else x for x in concern_adj_econ.weight / max(concern_adj_econ.weight)],
-                                            symbol = symbols1[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others3 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].not_very_adjusted,
-                                name = 'not very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = [x+5 if x<3 else x for x in concern_adj_econ.samplesize*0.006],
-                                            color = "#B6D7B9",
-                                            opacity = [x+0.1 if x<0.5 else x for x in concern_adj_econ.weight / max(concern_adj_econ.weight)],
-                                            symbol = symbols1[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others4 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['pollster'] == selected_pollsters[i]].not_at_all_adjusted,
-                                name = 'not at all ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = [x+5 if x<3 else x for x in concern_adj_econ.samplesize*0.006],
-                                            color = "green",
-                                            opacity = [x+0.1 if x<0.5 else x for x in concern_adj_econ.weight / max(concern_adj_econ.weight)],
-                                            symbol = symbols1[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
+      elif radio_display1 == 'by_pollster':
+          others1 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].approve_adjusted,
+                                  name = 'approve ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "green",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols4[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].disapprove_adjusted,
+                                  name = 'disapprove ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "red",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols4[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
 
-    elif radio_display1 == 'by_sponsor':
-        others1 = [go.Scatter(x = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].end_date, 
-                              y = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].very,
-                                name = 'very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 8,
-                                            color = "red",
-                                            opacity = 0.8,
-                                            symbol = symbols2[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others2 = [go.Scatter(x = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].end_date, 
-                              y = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].somewhat,
-                                name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 8,
-                                            color = "pink",
-                                            opacity = 0.8,
-                                            symbol = symbols2[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others3 = [go.Scatter(x = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].end_date, 
-                              y = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].not_very,
-                                name = 'not very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 8,
-                                            color = "#B6D7B9",
-                                            opacity = 0.8,
-                                            symbol = symbols2[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others4 = [go.Scatter(x = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].end_date, 
-                              y = concern_econ[concern_econ['sponsor'] == selected_pollsters[i]].not_at_all,
-                                name = 'not at all ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 8,
-                                            color = "green",
-                                            opacity = 0.8,
-                                            symbol = symbols2[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
+      elif radio_display1 == 'by_sponsor':
+          others1 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].approve,
+                                  name = 'approve ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "green",
+                                              opacity = 0.3,
+                                              symbol = symbols5[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].disapprove,
+                                  name = 'disapprove ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "red",
+                                              opacity = 0.3,
+                                              symbol = symbols5[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
 
-    elif radio_display1 == 'by_population':
-        others1 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].very_adjusted,
-                                name = 'very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 6,
-                                            color = "red",
-                                            opacity = 0.8,
-                                            symbol = symbols3[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others2 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].somewhat_adjusted,
-                                name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 6,
-                                            color = "pink",
-                                            opacity = 0.8,
-                                            symbol = symbols3[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others3 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].not_very_adjusted,
-                                name = 'not very ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 6,
-                                            color = "#B6D7B9",
-                                            opacity = 0.8,
-                                            symbol = symbols3[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
-        others4 = [go.Scatter(x = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].end_date, 
-                              y = concern_adj_econ[concern_adj_econ['population'] == selected_pollsters[i]].not_at_all_adjusted,
-                                name = 'not at all ' + '(' + selected_pollsters[i] + ')',
-                                mode = 'markers',
-                                marker = dict(size = 6,
-                                            color = "green",
-                                            opacity = 0.8,
-                                            symbol = symbols3[selected_pollsters[i]]
-                                           )
-                                ) for i in range(len(selected_pollsters))]
+      elif radio_display1 == 'by_population':
+          others1 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].approve_adjusted,
+                                  name = 'approve ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "green",
+                                              opacity = 0.3,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].disapprove_adjusted,
+                                  name = 'disapprove ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "red",
+                                              opacity = 0.3,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
 
-    data = topline + All + others1 + others2 + others3 + others4
+      elif radio_display1 == 'by_party':
+          others1 = [go.Scatter(x = df_adj[df_adj['party'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['party'] == selected_pollsters[i]].approve_adjusted,
+                                  name = 'approve ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "green",
+                                              opacity = 0.3,
+                                              symbol = symbols6[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_adj[df_adj['party'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['party'] == selected_pollsters[i]].disapprove_adjusted,
+                                  name = 'disapprove ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "red",
+                                              opacity = 0.3,
+                                              symbol = symbols6[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
 
-    layout = dict(title = {
+
+    else: 
+      if selected_question == 'Q_concern_econ':
+        df_topline = concern_topline_econ
+        df_adj = concern_adj_econ
+        df_original = concern_econ
+      elif selected_question == 'Q_concern_infec':
+        df_topline = concern_topline_infect
+        df_adj = concern_adj_infec
+        df_original = concern_infec
+
+
+      topline = [go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.very_estimate,
+                               name = 'very (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Red")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.somewhat_estimate,
+                               name = 'somewhat (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Pink")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.not_very_estimate,
+                               name = 'not very (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "#B6D7B9")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.not_at_all_estimate,
+                               name = 'not at all (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Green")
+                              ), 
+                  go.Scatter(x=['2020-02-29','2020-02-29', '2020-03-09', '2020-03-12','2020-03-27', '2020-03-27', '2020-04-19'],
+                              y=[76, 73, -3, 71, 74, 71, 71],
+                              text=["1st death reported",
+                                  "in the US",
+                                  "First Trading Curb",
+                                  'Second Trading Curb',
+                                  "Trump signs",
+                                  "Stimulus bill",
+                                  "U.S Oil Price Hits $15"],
+                              mode="text",
+                              showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-02-29', '2020-02-29'],
+                           y = [0,70],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-09', '2020-03-09'],
+                           y = [0,70],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-12', '2020-03-12'],
+                           y = [0,70],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-27', '2020-03-27'],
+                           y = [0,70],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-04-19', '2020-04-19'],
+                           y = [0,70],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          )]
+
+      if radio_display1 == 'by_party':
+          radio_display1 = 'All'
+
+
+      if radio_display1 == 'All':
+          All = [go.Scatter(x = df_adj.end_date,
+                                y = df_adj.very_adjusted,
+                                name = "very",
+                                mode = 'markers',
+                                marker = dict(size = df_adj.samplesize*0.005,
+                                              color = "red",
+                                              opacity = df_adj.weight / max(df_adj.weight)
+                                             )),
+                 go.Scatter(x = df_adj.end_date,
+                                y = df_adj.somewhat_adjusted,
+                                name = "somewhat",
+                                mode = 'markers',
+                                marker = dict(size = df_adj.samplesize*0.005,
+                                             color = "pink",
+                                             opacity = df_adj.weight / max(df_adj.weight)
+                                             )),
+                 go.Scatter(x = df_adj.end_date,
+                                y = df_adj.not_very_adjusted,
+                                name = "not_very",
+                                mode = 'markers',
+                                marker = dict(size = df_adj.samplesize*0.005,
+                                             color = "#B6D7B9",
+                                             opacity = df_adj.weight / max(df_adj.weight)
+                                             )),
+                 go.Scatter(x = df_adj.end_date,
+                                y = df_adj.not_at_all_adjusted,
+                                name = "not_at_all",
+                                mode = 'markers',
+                                marker = dict(size = df_adj.samplesize*0.005,
+                                             color = "Green",
+                                             opacity = df_adj.weight / max(df_adj.weight)
+                                             ))
+                  ]
+
+      elif radio_display1 == 'by_pollster':
+          others1 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].very_adjusted,
+                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = [x+5 if x<3 else x for x in df_adj.samplesize*0.006],
+                                              color = "red",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols1[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].somewhat_adjusted,
+                                  name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = [x+5 if x<3 else x for x in df_adj.samplesize*0.006],
+                                              color = "pink",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols1[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others3 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].not_very_adjusted,
+                                  name = 'not very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = [x+5 if x<3 else x for x in df_adj.samplesize*0.006],
+                                              color = "#B6D7B9",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols1[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others4 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['pollster'] == selected_pollsters[i]].not_at_all_adjusted,
+                                  name = 'not at all ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = [x+5 if x<3 else x for x in df_adj.samplesize*0.006],
+                                              color = "green",
+                                              opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
+                                              symbol = symbols1[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+
+      elif radio_display1 == 'by_sponsor':
+          others1 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].very,
+                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "red",
+                                              opacity = 0.8,
+                                              symbol = symbols2[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].somewhat,
+                                  name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "pink",
+                                              opacity = 0.8,
+                                              symbol = symbols2[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others3 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].not_very,
+                                  name = 'not very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "#B6D7B9",
+                                              opacity = 0.8,
+                                              symbol = symbols2[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others4 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
+                                y = df_original[df_original['sponsor'] == selected_pollsters[i]].not_at_all,
+                                  name = 'not at all ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 8,
+                                              color = "green",
+                                              opacity = 0.8,
+                                              symbol = symbols2[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+
+      elif radio_display1 == 'by_population':
+          others1 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].very_adjusted,
+                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "red",
+                                              opacity = 0.8,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others2 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].somewhat_adjusted,
+                                  name = 'somewhat ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "pink",
+                                              opacity = 0.8,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others3 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].not_very_adjusted,
+                                  name = 'not very ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "#B6D7B9",
+                                              opacity = 0.8,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+          others4 = [go.Scatter(x = df_adj[df_adj['population'] == selected_pollsters[i]].end_date, 
+                                y = df_adj[df_adj['population'] == selected_pollsters[i]].not_at_all_adjusted,
+                                  name = 'not at all ' + '(' + selected_pollsters[i] + ')',
+                                  mode = 'markers',
+                                  marker = dict(size = 6,
+                                              color = "green",
+                                              opacity = 0.8,
+                                              symbol = symbols3[selected_pollsters[i]]
+                                             )
+                                  ) for i in range(len(selected_pollsters))]
+
+    data = topline + topline1 + All + others1 + others2 + others3 + others4
+
+    if selected_question == "Q_concern_infec":
+        layout = dict(title = {
+                    'text': "<b>How concerned are Americans about infection?</b>",
+                    'y':0.9,
+                    'x':0.5,
+                    'xanchor': 'center',
+                    'yanchor': 'top'},
+                   plot_bgcolor='rgb(247,245,245)',
+                   height = 500,
+                   hovermode='closest',
+                   xaxis_showgrid=False, yaxis_showgrid=False,
+                   )
+    elif selected_question == "Q_concern_econ":
+        layout = dict(title = {
                     'text': "<b>How concerned are Americans about economy?</b>",
+                    'y':0.9,
+                    'x':0.5,
+                    'xanchor': 'center',
+                    'yanchor': 'top'},
+                   plot_bgcolor='rgb(247,245,245)',
+                   height = 500,
+                   hovermode='closest',
+                   xaxis_showgrid=False, yaxis_showgrid=False,
+                   )
+    elif selected_question == "Q_approval":
+        layout = dict(title = {
+                    'text': "<b>Do Americans approve of Trump’s response to the coronavirus crisis?</b>",
                     'y':0.9,
                     'x':0.5,
                     'xanchor': 'center',
@@ -2084,8 +2393,7 @@ def update_fig_s1(selected_pollsters, radio_display1):
 
 
 
-
-####################################################################################
+##################################################################################
 #######################   Page 3 - Plot2.   Tweeter      ###########################
 ####################################################################################
 @app.callback(
@@ -2165,7 +2473,7 @@ layout1 = go.Layout(title = 'Time Series for Unemployment Rate',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = 'white',
+                   plot_bgcolor = '#f5f7fa',
                    font=dict(size=10),
                     height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=30,pad=0))
 
@@ -2177,7 +2485,7 @@ layout2 = go.Layout(title = 'Time Series for the Emerging Unemployment Claims',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = 'white',
+                   plot_bgcolor = '#f5f7fa',
                    font=dict(size=9),
                    height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=60,pad=0))
 
@@ -2263,8 +2571,10 @@ def update_figure(un_state,un_time):
             y = df_unemployment_rate_1['UEP Rate'],
             text= val,
             name = val,
-            mode = 'lines',
-            showlegend=True,
+            mode = 'lines+markers',
+            marker = {'symbol':'triangle-right','size':5},
+            line = {'width':1},
+            showlegend=True
             
         ))
 
@@ -2273,7 +2583,9 @@ def update_figure(un_state,un_time):
             y = df_claims_1['claims'],
             text= val,
             name = val,
-            mode = 'lines',
+            mode = 'lines+markers',
+            marker = {'symbol':'triangle-right','size':5}, #star-dot
+            line = {'width':1},
             showlegend=False
         ))
 
@@ -2391,4 +2703,4 @@ def update_table(search_text, selected_state, selected_status):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
