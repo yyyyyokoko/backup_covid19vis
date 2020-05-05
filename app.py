@@ -787,14 +787,14 @@ SURVEY_MEDIA = [
                     options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
                                {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
                                {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval'}],
-                    value = 'Q_concern_infec'
+                    value = 'Q_concern_econ'
                     )
 
                 ], width = 10),
 
             ]),
-        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search trends. Surveys show that after the first death in the US, people started to become more worried about COVID-19. Also, registered voters and likely voters are generally less worried about COVID-19 than average Americans. Surveys sponsored by Fortune always show a less optimistic attitude towards the economy compared to average surveys, whereas surveys sponsored by CNBC generally receive more optimistic responses."),
-        html.P("Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. ", style={'color': 'blue'}),
+        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search trends. This page was inspired by 538 survey website and gathered people’s opinion on three topics. Use the dropdown above to select a topic. Surveys show that after the first death in the US, people started to become more worried. Interestingly, registered voters and likely voters are generally less worried about COVID-19 than average Americans. Surveys sponsored by Fortune always show a less optimistic attitude towards the economy compared to average surveys, whereas surveys sponsored by CNBC generally receive more optimistic responses."),
+        html.P("Use the dropdown to select topics. Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. ", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
                 html.H5("Choose Filter :"),
@@ -1936,6 +1936,7 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
     others2 = []
     others3 = []
     others4 = []
+    events = []
 
     if selected_question == 'Q_approval':
 
@@ -1955,15 +1956,14 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                              mode = 'lines',
                              line = dict(color = "Red")
                             ),
-                 go.Scatter(x=['2020-02-25','2020-02-25','2020-03-03','2020-03-03', '2020-03-13','2020-03-13','2020-03-27', '2020-03-27', '2020-04-19'],
-                              y=[89, 84,105, 100, 94, 90, 100, 94, 96],
-                              text=['1st case', 'in the US',
+                 go.Scatter(x=['2020-02-23','2020-02-23','2020-03-03','2020-03-03', '2020-03-13','2020-03-13','2020-03-27', '2020-03-27'],
+                              y=[89, 84,105, 100, 94, 90, 100, 94],
+                              text=['1st case of suspected', 'local transmission in the US',
                                   "Trump donated salary",
                                   "to fight the virus",
                                   'Trump declares', 'national emergency',
                                   "Trump signs",
-                                  "Stimulus bill",
-                                  "U.S Oil Price Hits $15"],
+                                  "Stimulus bill"],
                               mode="text",
                               showlegend=False
                           ),
@@ -1986,13 +1986,7 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                            showlegend=False
                           ),
                   go.Scatter(x = ['2020-03-27', '2020-03-27'],
-                           y = [0,85],
-                           mode = 'lines',
-                           line = dict(color = "grey",width=1, dash="dashdot"),
-                           showlegend=False
-                          ),
-                  go.Scatter(x = ['2020-04-19', '2020-04-19'],
-                           y = [0,85],
+                           y = [0,85], 
                            mode = 'lines',
                            line = dict(color = "grey",width=1, dash="dashdot"),
                            showlegend=False
@@ -2111,37 +2105,8 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
         df_topline = concern_topline_econ
         df_adj = concern_adj_econ
         df_original = concern_econ
-      elif selected_question == 'Q_concern_infec':
-        df_topline = concern_topline_infect
-        df_adj = concern_adj_infec
-        df_original = concern_infec
 
-
-      topline = [go.Scatter(x = df_topline.modeldate,
-                               y = df_topline.very_estimate,
-                               name = 'very (AVERAGE)',
-                               mode = 'lines',
-                               line = dict(color = "Red")
-                              ),
-                 go.Scatter(x = df_topline.modeldate,
-                               y = df_topline.somewhat_estimate,
-                               name = 'somewhat (AVERAGE)',
-                               mode = 'lines',
-                               line = dict(color = "Pink")
-                              ),
-                 go.Scatter(x = df_topline.modeldate,
-                               y = df_topline.not_very_estimate,
-                               name = 'not very (AVERAGE)',
-                               mode = 'lines',
-                               line = dict(color = "#B6D7B9")
-                              ),
-                 go.Scatter(x = df_topline.modeldate,
-                               y = df_topline.not_at_all_estimate,
-                               name = 'not at all (AVERAGE)',
-                               mode = 'lines',
-                               line = dict(color = "Green")
-                              ), 
-                  go.Scatter(x=['2020-02-29','2020-02-29', '2020-03-09', '2020-03-12','2020-03-27', '2020-03-27', '2020-04-19'],
+        events = [go.Scatter(x=['2020-02-29','2020-02-29', '2020-03-09', '2020-03-12','2020-03-27', '2020-03-27', '2020-04-19'],
                               y=[76, 73, -3, 71, 74, 71, 71],
                               text=["1st death reported",
                                   "in the US",
@@ -2184,6 +2149,87 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                            showlegend=False
                           )]
 
+      elif selected_question == 'Q_concern_infec':
+        df_topline = concern_topline_infect
+        df_adj = concern_adj_infec
+        df_original = concern_infec
+
+        events = [go.Scatter(x=['2020-02-24','2020-02-27', '2020-03-03', '2020-03-03','2020-03-15', '2020-03-15', '2020-03-26','2020-03-26', '2020-04-05',
+                                '2020-04-24', '2020-04-24'],
+                              y=[45, 41, 58, 54, 49, 45, 62, 58, 52, 50, 46],
+                              text=["1st death reported", "in the US",
+                                  "CDC lifts restrictions", "for virus testing",
+                                  'CDC warns against','large gatherings',
+                                  "US leads the world", "in COVID-19 cases",
+                                  "Global cases hit 1 million",
+                                  'More than 1 million', 'confirmed in the US'],
+                              mode="text",
+                              showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-02-29', '2020-02-29'],
+                           y = [0,39],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-03', '2020-03-03'],
+                           y = [0,52],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-15', '2020-03-15'],
+                           y = [0,44],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-03-26', '2020-03-26'],
+                           y = [0,55],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-04-02', '2020-04-02'],
+                           y = [0,50],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          ),
+                  go.Scatter(x = ['2020-04-27', '2020-04-27'],
+                           y = [0,45],
+                           mode = 'lines',
+                           line = dict(color = "grey",width=1, dash="dashdot"),
+                           showlegend=False
+                          )]
+
+
+      topline = [go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.very_estimate,
+                               name = 'very (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Red")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.somewhat_estimate,
+                               name = 'somewhat (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Pink")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.not_very_estimate,
+                               name = 'not very (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "#B6D7B9")
+                              ),
+                 go.Scatter(x = df_topline.modeldate,
+                               y = df_topline.not_at_all_estimate,
+                               name = 'not at all (AVERAGE)',
+                               mode = 'lines',
+                               line = dict(color = "Green")
+                              ), 
+                  ]
+
       if radio_display1 == 'by_party':
           radio_display1 = 'All'
 
@@ -2224,6 +2270,11 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                   ]
 
       elif radio_display1 == 'by_pollster':
+          # print(df_adj.pollster)
+          # print(selected_pollsters)
+          # print(selected_pollsters[0])
+          # print(selected_pollsters[0] == 'YouGov')
+          # print(df_adj[df_adj['pollster'] == selected_pollsters[0]])
           others1 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
                                 y = df_adj[df_adj['pollster'] == selected_pollsters[i]].very_adjusted,
                                   name = 'very ' + '(' + selected_pollsters[i] + ')',
@@ -2268,12 +2319,12 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
       elif radio_display1 == 'by_sponsor':
           others1 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
                                 y = df_original[df_original['sponsor'] == selected_pollsters[i]].very,
-                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                  #name = 'very ' + '(' + selected_pollsters[i] + ')',
                                   mode = 'markers',
                                   marker = dict(size = 8,
                                               color = "red",
-                                              opacity = 0.8,
-                                              symbol = symbols2[selected_pollsters[i]]
+                                              opacity = 0.8
+                                              #symbol = symbols2[selected_pollsters[i]]
                                              )
                                   ) for i in range(len(selected_pollsters))]
           others2 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
@@ -2349,7 +2400,7 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                                              )
                                   ) for i in range(len(selected_pollsters))]
 
-    data = topline + topline1 + All + others1 + others2 + others3 + others4
+    data = topline + topline1 + All + others1 + others2 + others3 + others4 + events
 
     if selected_question == "Q_concern_infec":
         layout = dict(title = {
@@ -2473,7 +2524,7 @@ layout1 = go.Layout(title = 'Time Series for Unemployment Rate',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = '#f5f7fa',
+                   plot_bgcolor = 'white',
                    font=dict(size=10),
                     height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=30,pad=0))
 
@@ -2485,7 +2536,7 @@ layout2 = go.Layout(title = 'Time Series for the Emerging Unemployment Claims',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = '#f5f7fa',
+                   plot_bgcolor = 'white',
                    font=dict(size=9),
                    height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=60,pad=0))
 
