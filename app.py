@@ -257,18 +257,25 @@ concern_topline_econ = concern_topline[concern_topline['subject'] == 'concern-ec
 concern_topline_infect = concern_topline[concern_topline['subject'] == 'concern-infected']
 
 ### Supportive accessories
-symbols1 = pd.DataFrame({'pollster':concern_adj_econ.pollster.unique(),
-                          'symbol': ['diamond','circle','cross', 
+symbols1 = pd.DataFrame({'pollster':concern_adj.pollster.unique(),
+                          'symbol': ['diamond','circle','cross', 'triangle-up','circle',
                                      'triangle-up','square','triangle-right',
-                                     'diamond-tall','y-down',
+                                     'diamond-tall','cross','star',
+                                     'x','hourglass',
+                                     'star','diamond-tall',
+                                     'diamond','circle','cross', 
+                                     'triangle-up','square','triangle-right',
+                                     'diamond-tall','hourglass',
                                      'x','hourglass',
                                      'star','hexagram'
                                     ]}).set_index('pollster').to_dict()['symbol']
 
-sponsors = list(concern_econ.sponsor.unique())
+sponsors = list(concern.sponsor.unique())
 sponsors = [sponsors[0]] + sponsors[2:len(sponsors)] + [sponsors[1]]
 symbols2 = pd.DataFrame({'sponsor':sponsors,
-                          'symbol': ['diamond','circle','cross', 
+                          'symbol': ['diamond','circle','cross', 'triangle-up','square','triangle-right','star',
+                                     'diamond-tall','hourglass','cross',
+                                     'star','diamond-tall','circle',
                                      'triangle-up','square','triangle-right',
                                      'diamond-tall','hourglass',
                                      'star','hexagram'
@@ -787,13 +794,13 @@ SURVEY_MEDIA = [
                     options = [{'label': 'How concerned are Americans about Infection?', 'value': 'Q_concern_infec'},
                                {'label': 'How concerned are Americans about Economy?', 'value': 'Q_concern_econ'},
                                {'label': 'Do Americans approve of Trump’s response to the coronavirus crisis?', 'value': 'Q_approval'}],
-                    value = 'Q_concern_econ'
+                    value = 'Q_concern_infec'
                     )
 
                 ], width = 10),
 
             ]),
-        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search trends. This page was inspired by 538 survey website and gathered people’s opinion on three topics. Use the dropdown above to select a topic. Surveys show that after the first death in the US, people started to become more worried. Interestingly, registered voters and likely voters are generally less worried about COVID-19 than average Americans. Surveys sponsored by Fortune always show a less optimistic attitude towards the economy compared to average surveys, whereas surveys sponsored by CNBC generally receive more optimistic responses."),
+        html.P("The Public Opinion page researched people’s opinions and concerns during the pandemic through surveys, social media posts and google search trends. This page was inspired by 538 survey website and gathered people’s opinion on three topics. Use the dropdown above to select a topic. Surveys show that after the first death in the US, people started to become more worried. Interestingly, even though registered voters and likely voters don’t show a difference on the level of concern about COVID-19, they are generally less worried about the economy than average Americans during the crisis. Surveys sponsored by Fortune always show a less optimistic attitude towards the economy compared to average surveys, whereas surveys sponsored by CNBC generally receive more optimistic responses. About infection, surveys sponsored by ABC News always show more concern than average surveys, whereas surveys sponsored by Economist always show less concern. More interesting insights can be found by exploring the tool!"),
         html.P("Use the dropdown to select topics. Use the radio button and select multiple sources of surveys in blank to see the comparison among participants’ opinions. ", style={'color': 'blue'}),
         dbc.Row([
             dbc.Col([
@@ -805,10 +812,10 @@ SURVEY_MEDIA = [
                 dcc.RadioItems(
                         id = 'radio_display1',
                         options=[{'label': 'All   ', 'value': 'All'},
-                                {'label': 'By Pollster   ', 'value': 'by_pollster'},
-                                {'label': 'By Sponsor  ', 'value': 'by_sponsor'},
-                                {'label': 'By Population', 'value': 'by_population'},
-                                {'label': 'By Party', 'value': 'by_party'}
+                                 {'label': 'By Sponsor  ', 'value': 'by_sponsor'},
+                                 {'label': 'By Population', 'value': 'by_population'},
+                                 {'label': 'By Party', 'value': 'by_party'},
+                                 {'label': 'By Pollster   ', 'value': 'by_pollster'}
                                 ],
                         value='All',
                         labelStyle={'display': 'block'}, style={'fontSize': 14, 'marginTop': '5px'}
@@ -1332,7 +1339,7 @@ def update_fig2(selected_states, selected_measure2):
                           textposition="top right"
                             ) for i in range(len(selected_states))]
 
-    data = data  + NY + CA + others1 + others2
+    data = data + others1 + others2 + NY + CA
     
     if selected_measure2 == "confirmed":
         layout = {"title": "Confirmed Case Growth Rate ", "height": 450,  "plot_bgcolor": '#f5f7fa','hovermode': 'closest'}
@@ -1894,7 +1901,7 @@ def set_survey_options(which_question, which_radio):
       elif which_radio == "by_pollster":
           return [[{'label': x, 'value': x} for x in list(concern_adj_infec.pollster.unique())], ['YouGov', 'SurveyUSA', 'Optimus','Quinnipiac University','Harris Insights & Analytics']]
       elif which_radio == "by_sponsor":
-          return [[{'label': x, 'value': x} for x in list(concern_infec.sponsor.unique())], ['ABC News', 'CBS News', 'CNBC', 'Economist', 'Fortune', 'USA Today']]
+          return [[{'label': x, 'value': x} for x in list(concern_infec.sponsor.unique())], ['ABC News', 'CBS News', 'CNBC', 'Economist', 'Fortune', 'USA Today', 'Daily Kos']]
       elif which_radio == 'by_population':
           return [[{'label': x, 'value': x} for x in list(concern_adj_infec.population.unique())], ['All Adults', 'Registered Voters']]
     
@@ -2270,15 +2277,11 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
                   ]
 
       elif radio_display1 == 'by_pollster':
-          # print(df_adj.pollster)
-          # print(selected_pollsters)
-          # print(selected_pollsters[0])
-          # print(selected_pollsters[0] == 'YouGov')
-          # print(df_adj[df_adj['pollster'] == selected_pollsters[0]])
+          
           others1 = [go.Scatter(x = df_adj[df_adj['pollster'] == selected_pollsters[i]].end_date, 
                                 y = df_adj[df_adj['pollster'] == selected_pollsters[i]].very_adjusted,
-                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
-                                  mode = 'markers',
+                                   name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                   mode = 'markers',
                                   marker = dict(size = [x+5 if x<3 else x for x in df_adj.samplesize*0.006],
                                               color = "red",
                                               opacity = [x+0.1 if x<0.5 else x for x in df_adj.weight / max(df_adj.weight)],
@@ -2319,12 +2322,12 @@ def update_fig_s1(selected_question, selected_pollsters, radio_display1):
       elif radio_display1 == 'by_sponsor':
           others1 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
                                 y = df_original[df_original['sponsor'] == selected_pollsters[i]].very,
-                                  #name = 'very ' + '(' + selected_pollsters[i] + ')',
+                                  name = 'very ' + '(' + selected_pollsters[i] + ')',
                                   mode = 'markers',
                                   marker = dict(size = 8,
                                               color = "red",
-                                              opacity = 0.8
-                                              #symbol = symbols2[selected_pollsters[i]]
+                                              opacity = 0.8,
+                                              symbol = symbols2[selected_pollsters[i]]
                                              )
                                   ) for i in range(len(selected_pollsters))]
           others2 = [go.Scatter(x = df_original[df_original['sponsor'] == selected_pollsters[i]].end_date, 
@@ -2524,7 +2527,7 @@ layout1 = go.Layout(title = 'Time Series for Unemployment Rate',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = '#f5f7fa',
+                   plot_bgcolor = 'white',
                    font=dict(size=10),
                     height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=30,pad=0))
 
@@ -2536,7 +2539,7 @@ layout2 = go.Layout(title = 'Time Series for the Emerging Unemployment Claims',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = '#f5f7fa',
+                   plot_bgcolor = 'white',
                    font=dict(size=9),
                    height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=60,pad=0))
 
