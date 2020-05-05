@@ -735,7 +735,20 @@ MOBILITY =[
                 html.Iframe(src = " https://hack-cov19.herokuapp.com/", width="100%", height = '600px')
                 #html.Iframe(src = "https://www.youtube.com/embed/zWfyxknakAs", width="100%", height = '600px')
                 ], width = 12)
-            ])
+            ]),
+    dbc.Row([
+            html.Label('Below is a snapshot of the visualisation we built in case the interactive interface takes a few minutes to load due to the large amount of data in the backend',
+                style = {'fontSize': '10px'}),
+            dbc.Col([
+                html.Img(src = "assets/mobility1.png", height = '300px', width = '500px'
+                    )
+                ], width = 6),
+            dbc.Col([
+                html.Img(src = "assets/mobility2.png", height = '300px'
+                    )
+                ], width = 6)
+
+        ])
 
         ])
     ]
