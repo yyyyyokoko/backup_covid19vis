@@ -2,3 +2,5 @@ The pandemic of COVID-19 has become one of the major challenges of global public
 
 Our project is built on Python Plotly and Dash, then the website is deployed via Heroku. 
 To run the code, clone the repository and type `python3 app.py` in your terminal. 
+
+The link to the website: https://backupcovidviz.herokuapp.com/
