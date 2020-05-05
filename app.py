@@ -2524,7 +2524,7 @@ layout1 = go.Layout(title = 'Time Series for Unemployment Rate',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = 'white',
+                   plot_bgcolor = '#f5f7fa',
                    font=dict(size=10),
                     height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=30,pad=0))
 
@@ -2536,7 +2536,7 @@ layout2 = go.Layout(title = 'Time Series for the Emerging Unemployment Claims',
                        spikemode  = 'across+toaxis',
                        linewidth=0.5,
                        mirror=True),
-                   plot_bgcolor = 'white',
+                   plot_bgcolor = '#f5f7fa',
                    font=dict(size=9),
                    height = 200, width = 500, margin=dict(l=80,r=0,b=0,t=60,pad=0))
 
